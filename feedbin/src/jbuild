@@ -1,0 +1,7 @@
+(jbuild_version 1)
+
+(library
+ ((name feedbin)
+  (public_name feedbin)
+  (libraries (base sexplib))
+  (preprocess (pps (ppx_jane bisect_ppx -conditional)))))

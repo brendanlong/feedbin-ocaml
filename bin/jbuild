@@ -1,0 +1,6 @@
+(jbuild_version 1)
+
+(executables
+ ((names (feedbin_cli))
+  (libraries (feedbin.lwt))
+  (preprocess (pps (ppx_jane)))))
