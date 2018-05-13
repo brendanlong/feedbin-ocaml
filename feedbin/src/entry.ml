@@ -1,4 +1,5 @@
 open Base
+open Lwt
 
 open Entry_t
 
@@ -11,6 +12,37 @@ let of_string s =
 let list_of_string s =
   Or_error.try_with @@ fun () ->
   Entry_j.entries_of_string s
+
+let fetch_by_id client id =
+  let path = Printf.sprintf "/v2/entries/%d.json" id in
+  Client.get client path
+  >>= fun (res, body) ->
+  match Cohttp_lwt.Response.status res with
+  | `OK ->
+    Cohttp_lwt.Body.to_string body
+    >|= of_string
+    >|= Or_error.ok_exn
+    >|= Option.return
+  | `Not_found ->
+    return None
+  | status ->
+    Cohttp.Code.string_of_status status
+    |> Printf.sprintf "Unexpected status for %s: %s" path
+    |> failwith
+
+let fetch_all client =
+  let path = "/v2/entries.json" in
+  Client.get client path
+  >>= fun (res, body) ->
+  match Cohttp_lwt.Response.status res with
+  | `OK ->
+    Cohttp_lwt.Body.to_string body
+    >|= list_of_string
+    >|= Or_error.ok_exn
+  | status ->
+    Cohttp.Code.string_of_status status
+    |> Printf.sprintf "Unexpected status for %s: %s" path
+    |> failwith
 
 let%test_unit "parse first entries example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#entries *)

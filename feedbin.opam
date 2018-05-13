@@ -11,8 +11,10 @@ build-test: ["jbuilder" "runtest" "-p" name "-j" jobs]
 depends: [
   "atdgen"
   "base" {>= "v0.10"}
+  "cohttp-lwt-unix"
   "ptime"
   "sexplib" {>= "v0.10"}
+  "tls"
   "uri"
 
   "ppx_jane" {build}

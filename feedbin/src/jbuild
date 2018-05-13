@@ -3,9 +3,9 @@
 (library
  ((name feedbin)
   (public_name feedbin)
-  (libraries (atdgen base ptime sexplib uri))
+  (libraries (atdgen base cohttp-lwt-unix ptime sexplib uri))
   (inline_tests ((flags (-verbose))))
-  (preprocess (pps (ppx_jane bisect_ppx -conditional)))))
+  (preprocess (pps (ppx_jane lwt.ppx bisect_ppx -conditional)))))
 
 (rule
  ((targets (entry_j.ml
