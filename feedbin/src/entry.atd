@@ -1,0 +1,15 @@
+type datetime = string wrap <ocaml module="Datetime">
+type uri = string wrap <ocaml module="Uri_wrap">
+
+type entry =
+  { id : int
+  ; feed_id : int
+  ; ?title : string option
+  ; url : uri
+  ; ?author : string option
+  ; ?content : string option
+  ; ?summary : string option
+  ; published : datetime
+  ; created_at : datetime }
+
+type entries = entry list

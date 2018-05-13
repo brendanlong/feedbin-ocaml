@@ -1,11 +1,15 @@
 B ../../_build/default/feedbin/src/.feedbin.objs
+B /home/blong/.opam/core10/lib/atd
+B /home/blong/.opam/core10/lib/atdgen
 B /home/blong/.opam/core10/lib/base
 B /home/blong/.opam/core10/lib/base/caml
 B /home/blong/.opam/core10/lib/base/md5
 B /home/blong/.opam/core10/lib/base/shadow_stdlib
 B /home/blong/.opam/core10/lib/bin_prot
 B /home/blong/.opam/core10/lib/bin_prot/shape
+B /home/blong/.opam/core10/lib/biniou
 B /home/blong/.opam/core10/lib/bisect_ppx/runtime
+B /home/blong/.opam/core10/lib/easy-format
 B /home/blong/.opam/core10/lib/fieldslib
 B /home/blong/.opam/core10/lib/ocaml
 B /home/blong/.opam/core10/lib/ppx_assert/runtime-lib
@@ -17,20 +21,31 @@ B /home/blong/.opam/core10/lib/ppx_expect/config
 B /home/blong/.opam/core10/lib/ppx_hash/runtime-lib
 B /home/blong/.opam/core10/lib/ppx_inline_test/config
 B /home/blong/.opam/core10/lib/ppx_inline_test/runtime-lib
+B /home/blong/.opam/core10/lib/ptime
+B /home/blong/.opam/core10/lib/re
+B /home/blong/.opam/core10/lib/re/posix
+B /home/blong/.opam/core10/lib/result
 B /home/blong/.opam/core10/lib/sexplib
 B /home/blong/.opam/core10/lib/sexplib/0
+B /home/blong/.opam/core10/lib/stringext
 B /home/blong/.opam/core10/lib/typerep
+B /home/blong/.opam/core10/lib/uri
 B /home/blong/.opam/core10/lib/variantslib
+B /home/blong/.opam/core10/lib/yojson
+FLG -open Feedbin -w -40
 FLG -ppx '/home/blong/workspace/feedbin-ocaml/_build/default/.ppx/ppx_jane+bisect_ppx/ppx.exe --as-ppx --cookie '\''library-name="feedbin"'\'' -conditional'
-FLG -w -40
 S .
+S /home/blong/.opam/core10/lib/atd
+S /home/blong/.opam/core10/lib/atdgen
 S /home/blong/.opam/core10/lib/base
 S /home/blong/.opam/core10/lib/base/caml
 S /home/blong/.opam/core10/lib/base/md5
 S /home/blong/.opam/core10/lib/base/shadow_stdlib
 S /home/blong/.opam/core10/lib/bin_prot
 S /home/blong/.opam/core10/lib/bin_prot/shape
+S /home/blong/.opam/core10/lib/biniou
 S /home/blong/.opam/core10/lib/bisect_ppx/runtime
+S /home/blong/.opam/core10/lib/easy-format
 S /home/blong/.opam/core10/lib/fieldslib
 S /home/blong/.opam/core10/lib/ocaml
 S /home/blong/.opam/core10/lib/ppx_assert/runtime-lib
@@ -42,7 +57,14 @@ S /home/blong/.opam/core10/lib/ppx_expect/config
 S /home/blong/.opam/core10/lib/ppx_hash/runtime-lib
 S /home/blong/.opam/core10/lib/ppx_inline_test/config
 S /home/blong/.opam/core10/lib/ppx_inline_test/runtime-lib
+S /home/blong/.opam/core10/lib/ptime
+S /home/blong/.opam/core10/lib/re
+S /home/blong/.opam/core10/lib/re/posix
+S /home/blong/.opam/core10/lib/result
 S /home/blong/.opam/core10/lib/sexplib
 S /home/blong/.opam/core10/lib/sexplib/0
+S /home/blong/.opam/core10/lib/stringext
 S /home/blong/.opam/core10/lib/typerep
+S /home/blong/.opam/core10/lib/uri
 S /home/blong/.opam/core10/lib/variantslib
+S /home/blong/.opam/core10/lib/yojson
