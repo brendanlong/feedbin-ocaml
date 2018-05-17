@@ -23,7 +23,7 @@ let list_of_string s =
   Or_error.try_with @@ fun () ->
   Entry_j.entries_of_string s
 
-let fetch_by_id client id =
+let get_by_id client id =
   let path = Printf.sprintf "/v2/entries/%d.json" id in
   Client.get client path
   >>= fun (res, body) ->
@@ -40,7 +40,7 @@ let fetch_by_id client id =
     |> Printf.sprintf "Unexpected status for %s: %s" path
     |> failwith
 
-let fetch_all client =
+let get_all client =
   let path = "/v2/entries.json" in
   Client.get client path
   >>= fun (res, body) ->

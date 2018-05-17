@@ -14,7 +14,7 @@ let of_string s =
   Or_error.try_with @@ fun () ->
   Feed_j.feed_of_string s
 
-let fetch_by_id client id =
+let get_by_id client id =
   let path = Printf.sprintf "/v2/entries/%d.json" id in
   Client.get client path
   >>= fun (res, body) ->

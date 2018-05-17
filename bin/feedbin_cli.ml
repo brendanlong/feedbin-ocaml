@@ -19,7 +19,7 @@ let main () =
   | true ->
     printl "Auth succeeded"
     >>= fun () ->
-    Entry.fetch_all client
+    Entry.get_all client
     >>= printlf !"Entries:\n%{sexp: Entry.t list}"
 
 let () =
