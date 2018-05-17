@@ -1,4 +1,4 @@
-open Lwt
+open Lwt.Infix
 open Sexplib.Conv
 
 type t =

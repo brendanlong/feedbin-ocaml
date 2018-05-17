@@ -1,7 +1,5 @@
 open Base
-open Lwt
-
-open Feed_t
+open Lwt.Infix
 
 type t = Feed_t.feed =
   { id : int
@@ -25,7 +23,7 @@ let get_by_id client id =
     >|= Or_error.ok_exn
     >|= Option.return
   | `Not_found ->
-    return None
+    Lwt.return None
   | status ->
     Cohttp.Code.string_of_status status
     |> Printf.sprintf "Unexpected status for %s: %s" path
