@@ -11,8 +11,8 @@ let main () =
   print "Password: "
   >>= fun () ->
   let%lwt password = read_line stdin in
-  let client = Client.make ~user ~password () in
-  Client.check_auth client
+  let client = make ~user ~password () in
+  check_auth client
   >>= function
   | false ->
     printl "Auth failed"
