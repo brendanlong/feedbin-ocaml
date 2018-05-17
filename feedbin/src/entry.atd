@@ -4,11 +4,11 @@ type uri = string wrap <ocaml module="Uri_wrap">
 type entry =
   { id : int
   ; feed_id : int
-  ; ?title : string option
+  ; ?title : string nullable
   ; url : uri
-  ; ?author : string option
-  ; ?content : string option
-  ; ?summary : string option
+  ; ?author : string nullable
+  ; ?content : string nullable
+  ; ?summary : string nullable
   ; published : datetime
   ; created_at : datetime }
 

@@ -2,7 +2,7 @@ type uri = string wrap <ocaml module="Uri_wrap">
 
 type feed =
   { id : int
-  ; title : string option
+  ; title : string nullable
   ; feed_url : uri
   ; site_url : uri }
 
