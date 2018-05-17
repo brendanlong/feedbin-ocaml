@@ -16,10 +16,14 @@ let make_headers { user ; password } =
   let headers = Cohttp.Header.init () in
   Cohttp.Header.add_authorization headers (`Basic (user, password))
 
-let get ({ host } as t) path =
+let call ?data method_ ({ host } as t) path =
   let uri = Uri.with_path host path in
   let headers = make_headers t in
-  Cohttp_lwt_unix.Client.get ~headers uri
+  Cohttp_lwt_unix.Client.call ~headers method_ uri
+
+let get = call `GET
+let delete = call `POST
+let patch t path data = call ~data `PATCH t path
 
 let check_auth t =
   let path = "/v2/authentication.json" in

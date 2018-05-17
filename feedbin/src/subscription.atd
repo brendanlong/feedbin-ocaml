@@ -10,3 +10,6 @@ type subscription =
   ; site_url : uri }
 
 type subscriptions = subscription list
+
+type update =
+  { title : string }
