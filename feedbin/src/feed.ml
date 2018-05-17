@@ -13,7 +13,7 @@ let of_string s =
   Feed_j.feed_of_string s
 
 let get_by_id client id =
-  let path = Printf.sprintf "/v2/entries/%d.json" id in
+  let path = Printf.sprintf "/v2/feeds/%d.json" id in
   Client.get client path
   >>= fun (res, body) ->
   match Cohttp_lwt.Response.status res with
