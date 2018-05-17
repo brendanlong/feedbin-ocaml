@@ -3,7 +3,17 @@ open Lwt
 
 open Entry_t
 
-type t = entry [@@deriving compare, sexp_of]
+type t = Entry_t.entry =
+  { id : int
+  ; feed_id : int
+  ; title : string option
+  ; url : Uri.t
+  ; author : string option
+  ; content : string option
+  ; summary : string option
+  ; published : Datetime.t
+  ; created_at : Datetime.t }
+[@@deriving compare, sexp_of]
 
 let of_string s =
   Or_error.try_with @@ fun () ->
