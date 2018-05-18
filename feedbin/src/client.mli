@@ -1,5 +1,10 @@
 open Sexplib.Conv
 
+type error =
+  [ `Unauthorized of (string * string)
+  | `Unexpected_status of (string * int) ]
+[@@deriving compare, sexp_of]
+
 type t =
   { host : Uri.t
   ; user : string
@@ -8,8 +13,8 @@ type t =
 
 val make : ?host:Uri.t -> user:string -> password:string -> unit -> t    
 
-val get : t -> string -> (Cohttp_lwt.Response.t * Cohttp_lwt.Body.t) Lwt.t
-val delete : t -> string -> (Cohttp_lwt.Response.t * Cohttp_lwt.Body.t) Lwt.t
-val patch : t -> string -> string -> (Cohttp_lwt.Response.t * Cohttp_lwt.Body.t) Lwt.t
+val get : t -> string -> (string, error) Lwt_result.t
+val delete : t -> string -> (string, error) Lwt_result.t
+val patch : t -> string -> string -> (string, error) Lwt_result.t
 
 val check_auth : t -> bool Lwt.t

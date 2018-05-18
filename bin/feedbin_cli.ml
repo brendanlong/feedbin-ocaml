@@ -12,15 +12,15 @@ let main () =
   >>= fun () ->
   let%lwt password = read_line stdin in
   let client = make ~user ~password () in
-  check_auth client
+  check_auth client 
   >>= function
   | false ->
     printl "Auth failed"
   | true ->
     printl "Auth succeeded"
-    >>= fun () ->
+    >>= fun () -> 
     Entry.get_all client
-    >>= printlf !"Entries:\n%{sexp: Entry.t list}"
+    >>= printlf !"Entries:\n%{sexp: Entry.t list Result.t}"
 
 let () =
   Lwt_main.run @@ main ()
