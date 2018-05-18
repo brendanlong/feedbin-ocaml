@@ -8,26 +8,16 @@ type t = Feed_t.feed =
   ; site_url : Uri.t }
 [@@deriving compare, sexp_of]
 
-let of_string s =
-  Or_error.try_with @@ fun () ->
-  Feed_j.feed_of_string s
+let of_string = Parse.try_parse Feed_j.feed_of_string
 
 let get_by_id client id =
   let path = Printf.sprintf "/v2/feeds/%d.json" id in
   Client.get client path
-  >>= fun (res, body) ->
-  match Cohttp_lwt.Response.status res with
-  | `OK ->
-    Cohttp_lwt.Body.to_string body
-    >|= of_string
-    >|= Or_error.ok_exn
-    >|= Option.return
-  | `Not_found ->
-    Lwt.return None
-  | status ->
-    Cohttp.Code.string_of_status status
-    |> Printf.sprintf "Unexpected status for %s: %s" path
-    |> failwith
+  >|= Result.bind ~f:of_string
+  >|= Result.map ~f:Option.return
+  >|= function
+  | Error (`Unexpected_status { got = 404 }) -> Ok None
+  | v -> v
 
 let%test_unit "parse example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/feeds.md#get-feed *)
@@ -46,4 +36,4 @@ let%test_unit "parse example" =
     }
   |}
   |> of_string
-  |> [%test_result: t Or_error.t] ~expect
+  |> [%test_result: t Parse.result] ~expect

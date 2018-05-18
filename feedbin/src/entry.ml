@@ -13,44 +13,23 @@ type t = Entry_t.entry =
   ; created_at : Datetime.t }
 [@@deriving compare, sexp_of]
 
-let of_string s =
-  Or_error.try_with @@ fun () ->
-  Entry_j.entry_of_string s
+let of_string = Parse.try_parse Entry_j.entry_of_string
 
-let list_of_string s =
-  Or_error.try_with @@ fun () ->
-  Entry_j.entries_of_string s
+let list_of_string = Parse.try_parse Entry_j.entries_of_string
 
 let get_by_id client id =
   let path = Printf.sprintf "/v2/entries/%d.json" id in
   Client.get client path
-  >>= fun (res, body) ->
-  match Cohttp_lwt.Response.status res with
-  | `OK ->
-    Cohttp_lwt.Body.to_string body
-    >|= of_string
-    >|= Or_error.ok_exn
-    >|= Option.return
-  | `Not_found ->
-    Lwt.return None
-  | status ->
-    Cohttp.Code.string_of_status status
-    |> Printf.sprintf "Unexpected status for %s: %s" path
-    |> failwith
+  >|= Result.bind ~f:of_string
+  >|= Result.map ~f:Option.return
+  >|= function 
+  | Error (`Unexpected_status { got = 404 }) -> Ok None
+  | v -> v
 
 let get_all client =
   let path = "/v2/entries.json" in
   Client.get client path
-  >>= fun (res, body) ->
-  match Cohttp_lwt.Response.status res with
-  | `OK ->
-    Cohttp_lwt.Body.to_string body
-    >|= list_of_string
-    >|= Or_error.ok_exn
-  | status ->
-    Cohttp.Code.string_of_status status
-    |> Printf.sprintf "Unexpected status for %s: %s" path
-    |> failwith
+  >|= Result.bind ~f:list_of_string
 
 let%test_unit "parse first entries example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#entries *)
@@ -81,7 +60,7 @@ let%test_unit "parse first entries example" =
     ]
   |}
   |> list_of_string
-  |> [%test_result: t list Or_error.t] ~expect
+  |> [%test_result: t list Parse.result] ~expect
 
 let%test_unit "parse second entries example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#entries *)
@@ -110,7 +89,7 @@ let%test_unit "parse second entries example" =
     }]
   |}
   |> list_of_string
-  |> [%test_result: t list Or_error.t] ~expect
+  |> [%test_result: t list Parse.result] ~expect
 
 let%test_unit "parse extended mode example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#about-extended-modes *)
@@ -174,7 +153,7 @@ let%test_unit "parse extended mode example" =
     }
   |}
   |> of_string
-  |> [%test_result: t Or_error.t] ~expect
+  |> [%test_result: t Parse.result] ~expect
 
 let%test_unit "parse fourth entries example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#get-v2feeds203entriesjson *)
@@ -205,7 +184,7 @@ let%test_unit "parse fourth entries example" =
     ]
   |}
   |> list_of_string
-  |> [%test_result: t list Or_error.t] ~expect
+  |> [%test_result: t list  Parse.result] ~expect
 
 let%test_unit "parse single entry example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#get-v2entries3648jsonn *)
@@ -234,7 +213,7 @@ let%test_unit "parse single entry example" =
     }
   |}
   |> of_string
-  |> [%test_result: t Or_error.t] ~expect
+  |> [%test_result: t  Parse.result] ~expect
 
 let%test_unit "parse include_original example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#sample-responses *)
@@ -272,7 +251,7 @@ let%test_unit "parse include_original example" =
     }
   |}
   |> of_string
-  |> [%test_result: t Or_error.t] ~expect
+  |> [%test_result: t  Parse.result] ~expect
 
 let%test_unit "parse include_enclosure example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#sample-responses *)
@@ -307,4 +286,4 @@ let%test_unit "parse include_enclosure example" =
     }
   |}
   |> of_string
-  |> [%test_result: t Or_error.t] ~expect
+  |> [%test_result: t  Parse.result] ~expect

@@ -12,8 +12,8 @@ type t = Entry_t.entry =
   ; created_at : Ptime.t }
 [@@deriving compare, sexp_of]
 
-val of_string : string -> t Or_error.t
-val list_of_string : string -> t list Or_error.t
+val of_string : string -> (t, [> Parse.error ]) Result.t
+val list_of_string : string -> (t list, [> Parse.error ]) Result.t
 
-val get_by_id : Client.t -> int -> t option Lwt.t
-val get_all : Client.t -> t list Lwt.t
+val get_by_id : Client.t -> int -> (t option, [> Client.error | Parse.error ]) Lwt_result.t
+val get_all : Client.t -> (t list, [> Client.error | Parse.error ]) Lwt_result.t
