@@ -13,11 +13,13 @@ let of_string = Parse.try_parse Feed_j.feed_of_string
 let get_by_id client id =
   let path = Printf.sprintf "/v2/feeds/%d.json" id in
   Client.get client path
-  >|= Result.bind ~f:of_string
-  >|= Result.map ~f:Option.return
-  >|= function
-  | Error (`Unexpected_status { got = 404 }) -> Ok None
-  | v -> v
+  >|= Result.bind ~f:(fun (status, body) ->
+      match status with
+      | `Not_found -> Ok None
+      | `OK ->
+        of_string body
+        |> Result.map ~f:Option.return
+      | _ -> assert false)
 
 let%test_unit "parse example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/feeds.md#get-feed *)

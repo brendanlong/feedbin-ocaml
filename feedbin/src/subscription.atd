@@ -11,5 +11,14 @@ type subscription =
 
 type subscriptions = subscription list
 
+type create =
+  { feed_url : string }
+
+type multiple_option =
+  { feed_url : uri
+  ; title : string }
+
+type multiple_options = multiple_option list
+
 type update =
   { title : string }
