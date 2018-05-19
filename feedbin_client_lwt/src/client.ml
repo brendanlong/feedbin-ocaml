@@ -8,14 +8,14 @@ type unauthorized =
 
 type unexpected_status =
   { path : string
-  ; expected : int list
-  ; got : int }
-[@@deriving compare, sexp_of]
+  ; expected : Cohttp.Code.status_code list
+  ; got : Cohttp.Code.status_code }
+[@@deriving sexp_of]
 
 type error =
   [ `Unauthorized of unauthorized
   | `Unexpected_status of unexpected_status ]
-[@@deriving compare, sexp_of]
+[@@deriving sexp_of]
 
 type t =
   { host : Uri.t
@@ -34,7 +34,6 @@ let make_headers { user ; password } =
 
 let call ?(query=[]) ?(ok_statuses=[ `OK ]) ?data method_
     ({ host ; user } as t) ~path =
-  let ok_statuses = List.map ok_statuses ~f:Cohttp.Code.code_of_status in
   let uri =
     Uri.with_path host path
     |> Fn.flip Uri.with_query query
@@ -44,8 +43,7 @@ let call ?(query=[]) ?(ok_statuses=[ `OK ]) ?data method_
   Cohttp_lwt_unix.Client.call ?body ~headers method_ uri
   >>= fun (res, body) ->
   match Cohttp_lwt.Response.status res with
-  | status when List.exists ok_statuses ~f:(fun ok_status ->
-      Cohttp.Code.(code_of_status status = ok_status)) ->
+  | status when List.exists ok_statuses ~f:(Polymorphic_compare.(=) status) ->
     Cohttp_lwt.Body.to_string body
     >|= fun body ->
     Ok (status, body)
@@ -55,7 +53,7 @@ let call ?(query=[]) ?(ok_statuses=[ `OK ]) ?data method_
     Lwt.return_error
       (`Unexpected_status { path
                           ; expected = ok_statuses
-                          ; got = Cohttp.Code.code_of_status status })
+                          ; got = status })
 
 let get ?query t ~path f =
   call ?query `GET t ~path

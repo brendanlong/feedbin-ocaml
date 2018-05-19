@@ -1,5 +1,3 @@
-open Sexplib.Conv
-
 type unauthorized =
   { path : string
   ; user : string }
@@ -7,14 +5,14 @@ type unauthorized =
 
 type unexpected_status =
   { path : string
-  ; expected : int list
-  ; got : int }
-[@@deriving compare, sexp_of]
+  ; expected : Cohttp.Code.status_code list
+  ; got : Cohttp.Code.status_code }
+[@@deriving sexp_of]
 
 type error =
   [ `Unauthorized of unauthorized
   | `Unexpected_status of unexpected_status ]
-[@@deriving compare, sexp_of]
+[@@deriving sexp_of]
 
 type t =
   { host : Uri.t
