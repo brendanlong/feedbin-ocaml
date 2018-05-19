@@ -32,18 +32,19 @@ let make_headers { user ; password } =
   let headers = Cohttp.Header.init () in
   Cohttp.Header.add_authorization headers (`Basic (user, password))
 
-let call ?(ok_statuses=[`OK]) ?data method_ ({ host ; user } as t) path =
+let call ?(ok_statuses=[ `OK ]) ?data method_ ({ host ; user } as t) ~path =
   let ok_statuses = List.map ok_statuses ~f:Cohttp.Code.code_of_status in
   let uri = Uri.with_path host path in
   let headers = make_headers t in
-  Cohttp_lwt_unix.Client.call ~headers method_ uri
+  let body = Option.map data ~f:Cohttp_lwt.Body.of_string in
+  Cohttp_lwt_unix.Client.call ?body ~headers method_ uri
   >>= fun (res, body) ->
   match Cohttp_lwt.Response.status res with
-  | st when List.exists ok_statuses ~f:(fun ok_status ->
-      Cohttp.Code.(code_of_status st = ok_status)) ->
+  | status when List.exists ok_statuses ~f:(fun ok_status ->
+      Cohttp.Code.(code_of_status status = ok_status)) ->
     Cohttp_lwt.Body.to_string body
     >|= fun body ->
-    Ok (st, body)
+    Ok (status, body)
   | `Unauthorized ->
     Lwt.return_error (`Unauthorized { path ; user })
   | status ->
@@ -52,15 +53,28 @@ let call ?(ok_statuses=[`OK]) ?data method_ ({ host ; user } as t) path =
                           ; expected = ok_statuses
                           ; got = Cohttp.Code.code_of_status status })
 
-let get ?ok_statuses = call ?ok_statuses `GET
-let delete ?ok_statuses = call ?ok_statuses `POST
-let patch ?ok_statuses t path data = call ?ok_statuses ~data `PATCH t path
-let post ?ok_statuses t path data = call ?ok_statuses ~data `POST t path
+let get t ~path f =
+  call `GET t ~path
+  >|= Result.bind ~f:(fun (status, body) ->
+      match status with
+      | `OK -> f body
+      | _ -> assert false)
+
+let get_opt t ~path f =
+  call ~ok_statuses:[ `OK ; `Not_found ] `GET t ~path
+  >|= Result.bind ~f:(fun (status, body) ->
+      match status with
+      | `Not_found -> Ok None
+      | `OK ->
+        f body
+        |> Result.map ~f:Option.return
+      | _ -> assert false)
 
 let check_auth t =
   let path = "/v2/authentication.json" in
-  get t path
-  >|= function
-  | Ok _ -> Ok true
-  | Error (`Unauthorized _) -> Ok false
-  | Error e -> Error e
+  call ~ok_statuses:[ `OK ; `Unauthorized ] `GET t ~path
+  >|= Result.bind ~f:(
+    function
+    | `OK, _ -> Ok true
+    | `Unauthorized, _ -> Ok false
+    | _ -> assert false)

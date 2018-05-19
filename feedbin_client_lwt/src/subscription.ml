@@ -16,26 +16,20 @@ type multiple_options =
 
 let get_by_id client id =
   let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
-  Client.get client path
-  >|= Result.bind ~f:(fun (status, body) ->
-      match status with
-      | `Not_found -> Ok None
-      | `OK ->
-        Subscription.of_string body
-        |> Result.map ~f:Option.return
-      | _ -> assert false)
+  Client.get_opt client ~path Subscription.of_string
 
 let get_all client =
   let path = "/v2/subscriptions.json" in
-  Client.get client path
-  >|= Result.map ~f:snd
-  >|= Result.bind ~f:Subscription.list_of_string
+  Client.get client ~path Subscription.list_of_string
 
 let create_for_url client feed_url =
   let path = "/v2/subscriptions.json" in
-  { Subscription.feed_url }
-  |> Subscription.create_to_string
-  |> Client.post ~ok_statuses:[ `Created ; `Found ; `Not_found ] client path
+  let data =
+    { Subscription.feed_url }
+    |> Subscription.create_to_string
+  in
+  Client.call ~data ~ok_statuses:[ `Created ; `Found ; `Not_found ] `POST client
+    ~path
   >|= Result.bind ~f:(fun (status, body) ->
       match status with
       | `Not_found -> Ok None
@@ -51,13 +45,15 @@ let create_for_url client feed_url =
 
 let delete_by_id client id =
   let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
-  Client.delete ~ok_statuses:[ `No_content ] client path
+  Client.call ~ok_statuses:[ `No_content ] `GET client ~path
   >|= Result.map ~f:ignore
 
 let set_title client id title =
   let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
-  { Subscription.title }
-  |> Subscription.update_to_string
-  |> Client.patch client path
+  let data =
+    { Subscription.title }
+    |> Subscription.update_to_string
+  in
+  Client.call ~data `PATCH client ~path
   >|= Result.map ~f:snd
   >|= Result.bind ~f:Subscription.of_string
