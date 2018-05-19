@@ -25,7 +25,8 @@ type t =
 val make : ?host:Uri.t -> user:string -> password:string -> unit -> t    
 
 val call
-  : ?ok_statuses:Cohttp.Code.status_code list
+  : ?query:(string * string list) list
+  -> ?ok_statuses:Cohttp.Code.status_code list
   -> ?data:string
   -> Cohttp.Code.meth
   -> t
@@ -33,13 +34,15 @@ val call
   -> (Cohttp.Code.status_code * string, [> error]) Lwt_result.t
 
 val get
-  : t
+  : ?query:(string * string list) list
+  -> t
   -> path:string
   -> (string -> ('res, [> error ] as 'err) Base.Result.t)
   -> ('res, 'err) Lwt_result.t
 
 val get_opt
-  : t
+  : ?query:(string * string list) list
+  -> t
   -> path:string
   -> (string -> ('res, [> error ] as 'err) Base.Result.t)
   -> ('res option, 'err) Lwt_result.t

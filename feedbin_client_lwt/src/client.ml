@@ -32,9 +32,13 @@ let make_headers { user ; password } =
   let headers = Cohttp.Header.init () in
   Cohttp.Header.add_authorization headers (`Basic (user, password))
 
-let call ?(ok_statuses=[ `OK ]) ?data method_ ({ host ; user } as t) ~path =
+let call ?(query=[]) ?(ok_statuses=[ `OK ]) ?data method_
+    ({ host ; user } as t) ~path =
   let ok_statuses = List.map ok_statuses ~f:Cohttp.Code.code_of_status in
-  let uri = Uri.with_path host path in
+  let uri =
+    Uri.with_path host path
+    |> Fn.flip Uri.with_query query
+  in
   let headers = make_headers t in
   let body = Option.map data ~f:Cohttp_lwt.Body.of_string in
   Cohttp_lwt_unix.Client.call ?body ~headers method_ uri
@@ -53,14 +57,14 @@ let call ?(ok_statuses=[ `OK ]) ?data method_ ({ host ; user } as t) ~path =
                           ; expected = ok_statuses
                           ; got = Cohttp.Code.code_of_status status })
 
-let get t ~path f =
-  call `GET t ~path
+let get ?query t ~path f =
+  call ?query `GET t ~path
   >|= Result.bind ~f:(fun (status, body) ->
       match status with
       | `OK -> f body
       | _ -> assert false)
 
-let get_opt t ~path f =
+let get_opt ?query t ~path f =
   call ~ok_statuses:[ `OK ; `Not_found ] `GET t ~path
   >|= Result.bind ~f:(fun (status, body) ->
       match status with
