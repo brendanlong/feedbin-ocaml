@@ -1,5 +1,4 @@
 open Base
-open Lwt.Infix
 
 type t = Entry_t.entry =
   { id : int
@@ -15,24 +14,11 @@ type t = Entry_t.entry =
 
 let of_string = Parse.try_parse Entry_j.entry_of_string
 
+let to_string s = Entry_j.string_of_entry s
+
 let list_of_string = Parse.try_parse Entry_j.entries_of_string
 
-let get_by_id client id =
-  let path = Printf.sprintf "/v2/entries/%d.json" id in
-  Client.get ~ok_statuses:[ `OK ; `Not_found ] client path
-  >|= Result.bind ~f:(fun (status, body) ->
-      match status with
-      | `Not_found -> Ok None
-      | `OK ->
-        of_string body
-        |> Result.map ~f:Option.return
-      | _ -> assert false)
-
-let get_all client =
-  let path = "/v2/entries.json" in
-  Client.get client path
-  >|= Result.map ~f:snd
-  >|= Result.bind ~f:list_of_string
+let list_to_string s = Entry_j.string_of_entries s
 
 let%test_unit "parse first entries example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/entries.md#entries *)

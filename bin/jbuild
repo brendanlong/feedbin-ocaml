@@ -2,6 +2,5 @@
 
 (executables
  ((names (feedbin_cli))
-  (public_names (feedbin_cli))
-  (libraries (feedbin))
+  (libraries (feedbin_client))
   (preprocess (pps (ppx_jane lwt.ppx)))))

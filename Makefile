@@ -2,6 +2,7 @@ all: build
 
 build:
 	@jbuilder build @install
+	@jbuilder build bin/feedbin_cli.exe
 
 clean:
 	@rm -f `find . -name 'bisect*.out'`

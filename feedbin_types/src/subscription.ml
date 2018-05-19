@@ -1,5 +1,4 @@
 open Base
-open Lwt.Infix
 
 type t = Subscription_t.subscription =
   { id : int
@@ -10,68 +9,38 @@ type t = Subscription_t.subscription =
   ; site_url : Uri.t }
 [@@deriving compare, sexp_of]
 
-type multiple_option = Subscription_j.multiple_option =
+type create = Subscription_t.create =
+  { feed_url : string }
+[@@deriving compare, sexp_of]
+
+type multiple_option = Subscription_t.multiple_option =
   { feed_url : Uri.t
   ; title : string }
 [@@deriving compare, sexp_of]
 
-type multiple_options =
-  [ `Multiple_options of multiple_option list ]
+type update = Subscription_t.update =
+  { title : string }
 [@@deriving compare, sexp_of]
-
-let to_string = Subscription_j.string_of_subscription
 
 let of_string = Parse.try_parse Subscription_j.subscription_of_string
 
+let to_string s = Subscription_j.string_of_subscription s
+
 let list_of_string = Parse.try_parse Subscription_j.subscriptions_of_string
 
-let get_by_id client id =
-  let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
-  Client.get client path
-  >|= Result.bind ~f:(fun (status, body) ->
-      match status with
-      | `Not_found -> Ok None
-      | `OK ->
-        of_string body
-        |> Result.map ~f:Option.return
-      | _ -> assert false)
+let list_to_string s = Subscription_j.string_of_subscriptions s
 
-let get_all client =
-  let path = "/v2/subscriptions.json" in
-  Client.get client path
-  >|= Result.map ~f:snd
-  >|= Result.bind ~f:list_of_string
+let create_of_string = Parse.try_parse Subscription_j.create_of_string
 
-let create_for_url client feed_url =
-  let path = "/v2/subscriptions.json" in
-  { Subscription_t.feed_url }
-  |> Subscription_j.string_of_create
-  |> Client.post ~ok_statuses:[ `Created ; `Found ; `Not_found ] client path
-  >|= Result.bind ~f:(fun (status, body) ->
-      match status with
-      | `Not_found -> Ok None
-      | `Found
-      | `Created ->
-        of_string body
-        |> Result.map ~f:Option.return
-      | `Multiple_choices ->
-        Parse.try_parse Subscription_j.multiple_options_of_string body
-        |> Result.bind ~f:(fun options ->
-            Error (`Multiple_options options))
-      | _ -> assert false)
+let create_to_string s = Subscription_j.string_of_create s
 
-let delete_by_id client id =
-  let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
-  Client.delete ~ok_statuses:[ `No_content ] client path
-  >|= Result.map ~f:ignore
+let multiple_options_of_string = Parse.try_parse Subscription_j.multiple_options_of_string
 
-let set_title client id title =
-  let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
-  { Subscription_t.title }
-  |> Subscription_j.string_of_update
-  |> Client.patch client path
-  >|= Result.map ~f:snd
-  >|= Result.bind ~f:of_string
+let multiple_options_to_string s = Subscription_j.string_of_multiple_options s
+
+let update_of_string = Parse.try_parse Subscription_j.update_of_string
+
+let update_to_string s = Subscription_j.string_of_update s
 
 let%test_unit "get example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/subscriptions.md#get-subscriptions *)

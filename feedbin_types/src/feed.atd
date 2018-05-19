@@ -5,5 +5,3 @@ type feed =
   ; title : string nullable
   ; feed_url : uri
   ; site_url : uri }
-
-type feeds = feed list

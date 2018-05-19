@@ -1,0 +1,25 @@
+opam-version: "1.2"
+version: "0.1"
+maintainer: "self@brendanlong.com"
+homepage: "https://github.com/brendanlong/feedbin-ocaml"
+dev-repo: "https://github.com/brendanlong/feedbin-ocaml.git"
+bug-reports: "https://github.com/brendanlong/feedbin-ocaml/issues"
+
+build: ["jbuilder" "build" "-p" name "-j" jobs]
+build-test: ["jbuilder" "runtest" "-p" name "-j" jobs]
+
+depends: [
+  "atdgen"
+  "base" {>= "v0.10"}
+  "ptime"
+  "sexplib" {>= "v0.10"}
+  "uri"
+
+  "ppx_jane" {build}
+  "bisect_ppx" {build & >= "1.3.1"}
+  "jbuilder" {build & >= "1.0+beta18"}
+
+  "ounit" {test}
+]
+
+available: [ocaml-version >= "4.04.2"]

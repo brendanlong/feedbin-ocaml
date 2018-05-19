@@ -2,7 +2,7 @@ open Base
 open Lwt
 open Lwt_io
 
-open Feedbin
+open Feedbin_client
 
 let main () =
   print "User: "
@@ -15,14 +15,14 @@ let main () =
   check_auth client 
   >>= function
   | Error e ->
-    printlf !"Error checking auth: %{sexp: Result.error}" e
+    printlf !"Error checking auth: %{sexp: error}" e
   | Ok false ->
     printl "Auth failed"
   | Ok true ->
     printl "Auth succeeded"
     >>= fun () ->
     Entry.get_all client
-    >>= printlf !"Entries:\n%{sexp: Entry.t list Result.t}"
+    >>= printlf !"Entries:\n%{sexp: Entry.t list result}"
 
 let () =
   Lwt_main.run @@ main ()

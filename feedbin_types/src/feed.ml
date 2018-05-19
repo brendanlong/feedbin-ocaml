@@ -1,5 +1,4 @@
 open Base
-open Lwt.Infix
 
 type t = Feed_t.feed =
   { id : int
@@ -10,16 +9,7 @@ type t = Feed_t.feed =
 
 let of_string = Parse.try_parse Feed_j.feed_of_string
 
-let get_by_id client id =
-  let path = Printf.sprintf "/v2/feeds/%d.json" id in
-  Client.get client path
-  >|= Result.bind ~f:(fun (status, body) ->
-      match status with
-      | `Not_found -> Ok None
-      | `OK ->
-        of_string body
-        |> Result.map ~f:Option.return
-      | _ -> assert false)
+let to_string s = Feed_j.string_of_feed s
 
 let%test_unit "parse example" =
   (* https://github.com/feedbin/feedbin-api/blob/master/content/feeds.md#get-feed *)

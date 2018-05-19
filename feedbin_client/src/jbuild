@@ -1,0 +1,8 @@
+(jbuild_version 1)
+
+(library
+ ((name feedbin_client)
+  (public_name feedbin_client)
+  (libraries (base cohttp-lwt-unix feedbin_types sexplib))
+  (inline_tests ((flags (-verbose))))
+  (preprocess (pps (ppx_jane lwt.ppx bisect_ppx -conditional)))))
