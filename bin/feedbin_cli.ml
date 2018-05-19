@@ -2,7 +2,7 @@ open Base
 open Lwt
 open Lwt_io
 
-open Feedbin_client
+open Feedbin_client_lwt
 
 let main () =
   print "User: "
