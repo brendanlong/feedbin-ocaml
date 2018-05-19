@@ -18,9 +18,12 @@ let get_by_id client id =
   let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
   Client.get_opt client ~path Subscription.of_string
 
-let get_all client =
+let get_all ?since client =
   let path = "/v2/subscriptions.json" in
-  Client.get client ~path Subscription.list_of_string
+  let query = Option.map since ~f:(fun since ->
+      [ "since", [ Ptime.to_rfc3339 since ] ])
+  in
+  Client.get ?query client ~path Subscription.list_of_string
 
 let create_for_url client feed_url =
   let path = "/v2/subscriptions.json" in
