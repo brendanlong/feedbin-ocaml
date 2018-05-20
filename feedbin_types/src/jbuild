@@ -5,7 +5,8 @@
   (public_name feedbin_types)
   (libraries (atdgen base ptime sexplib uri))
   (inline_tests ((flags (-verbose))))
-  (preprocess (pps (ppx_jane bisect_ppx -conditional)))))
+  (preprocess (pps (ppx_jane bisect_ppx -conditional (-exclude-file feedbin_types/src/.exclude))))
+  (preprocessor_deps (.exclude))))
 
 (rule
  ((targets (entry_j.ml

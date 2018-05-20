@@ -5,7 +5,7 @@ build:
 	@jbuilder build bin/feedbin_cli.exe
 
 clean:
-	@rm -f `find . -name 'bisect*.out'`
+	@rm -rf `find . -name 'bisect*.out'` _coverage
 	@jbuilder clean
 
 coverage: clean
