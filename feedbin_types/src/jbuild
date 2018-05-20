@@ -11,34 +11,34 @@
  ((targets (entry_j.ml
             entry_j.mli))
   (deps    (entry.atd))
-  (action  (run atdgen -open Compares -open Sexplib.Std -deriving-conv compare,sexp_of -j -j-std ${^}))))
+  (action  (run atdgen -open Base.Export -open Base.Poly -open Sexplib.Std -deriving-conv compare,sexp_of -j -j-std ${^}))))
 
 (rule
  ((targets (entry_t.ml
             entry_t.mli))
   (deps    (entry.atd))
-  (action  (run atdgen -open Compares -open Sexplib.Std -deriving-conv compare,sexp_of -t -j-std ${^}))))
+  (action  (run atdgen -open Base.Export -open Base.Poly -open Sexplib.Std -deriving-conv compare,sexp_of -t -j-std ${^}))))
 
 (rule
  ((targets (feed_j.ml
             feed_j.mli))
   (deps    (feed.atd))
-  (action  (run atdgen -open Compares -open Sexplib.Std -deriving-conv compare,sexp_of -j -j-std ${^}))))
+  (action  (run atdgen -open Base.Export -open Base.Poly -open Sexplib.Std -deriving-conv compare,sexp_of -j -j-std ${^}))))
 
 (rule
  ((targets (feed_t.ml
             feed_t.mli))
   (deps    (feed.atd))
-  (action  (run atdgen -open Compares -open Sexplib.Std -deriving-conv compare,sexp_of -t -j-std ${^}))))
+  (action  (run atdgen -open Base.Export -open Base.Poly -open Sexplib.Std -deriving-conv compare,sexp_of -t -j-std ${^}))))
 
 (rule
  ((targets (subscription_j.ml
             subscription_j.mli))
   (deps    (subscription.atd))
-  (action  (run atdgen -open Compares -open Sexplib.Std -deriving-conv compare,sexp_of -j -j-std ${^}))))
+  (action  (run atdgen -open Base.Export -open Base.Poly -open Sexplib.Std -deriving-conv compare,sexp_of -j -j-std ${^}))))
 
 (rule
  ((targets (subscription_t.ml
             subscription_t.mli))
   (deps    (subscription.atd))
-  (action  (run atdgen -open Compares -open Sexplib.Std -deriving-conv compare,sexp_of -t -j-std ${^}))))
+  (action  (run atdgen -open Base.Export -open Base.Poly -open Sexplib.Std -deriving-conv compare,sexp_of -t -j-std ${^}))))
