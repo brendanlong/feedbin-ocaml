@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: ocaml/opam:ubuntu-16.04_ocaml-4.04.2
+        environment:
+          PGUSER: pgx
+          PGDATABASE: pgx-test
+          PGHOST: 127.0.0.1
+          TERM: xterm
+    steps:
+      - run:
+          name: Update opam
+          command: |
+            opam remote remove default
+            opam remote add default https://opam.ocaml.org
+      - checkout
+      - run:
+          name: Pin packages
+          command: |
+            opam pin add -y -n feedbin_types .
+            opam pin add -y -n feedbin_client_lwt .
+      - run:
+          name: Install system dependencies
+          command: sudo apt-get update && opam depext -y feedbin_types feedbin_client_lwt
+      - run:
+          name: Install OCaml dependencies
+          command: opam install --deps-only -y feedbin_types feedbin_client_lwt
+      - run:
+          # This is a separate step so we don't run tests for all of these ^
+          name: Install OCaml test dependencies
+          command: opam install --deps-only -t -y feedbin_types feedbin_client_lwt
+      - run:
+          name: Build
+          command: opam config exec -- make
+      - run:
+          name: Test
+          command: opam config exec -- make test
