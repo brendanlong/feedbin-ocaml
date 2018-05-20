@@ -43,8 +43,7 @@ let create_for_url client feed_url =
       | `Multiple_choices ->
         Subscription.multiple_options_of_string body
         |> Result.bind ~f:(fun options ->
-            Error (`Multiple_options options))
-      | _ -> assert false)
+            Error (`Multiple_options options)))
 
 let delete_by_id client id =
   let path = Printf.sprintf "/v2/subscriptions/%d.json" id in
@@ -57,6 +56,6 @@ let set_title client id title =
     { Subscription.title }
     |> Subscription.update_to_string
   in
-  Client.call ~data `PATCH client ~path
+  Client.call ~data ~ok_statuses:[ `OK ] `PATCH client ~path
   >|= Result.map ~f:snd
   >|= Result.bind ~f:Subscription.of_string

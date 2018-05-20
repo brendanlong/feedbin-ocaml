@@ -24,12 +24,12 @@ val make : ?host:Uri.t -> user:string -> password:string -> unit -> t
 
 val call
   : ?query:(string * string list) list
-  -> ?ok_statuses:Cohttp.Code.status_code list
   -> ?data:string
+  -> ok_statuses:([< Cohttp.Code.status_code ] as 'status) list
   -> Cohttp.Code.meth
   -> t
   -> path:string
-  -> (Cohttp.Code.status_code * string, [> error]) Lwt_result.t
+  -> ('status * string, [> error]) Lwt_result.t
 
 val get
   : ?query:(string * string list) list
