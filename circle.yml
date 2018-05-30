@@ -4,9 +4,6 @@ jobs:
     docker:
       - image: ocaml/opam:ubuntu-16.04_ocaml-4.04.2
         environment:
-          PGUSER: pgx
-          PGDATABASE: pgx-test
-          PGHOST: 127.0.0.1
           TERM: xterm
     steps:
       - run:
