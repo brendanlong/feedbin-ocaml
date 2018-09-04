@@ -31,8 +31,9 @@ let create_for_url client feed_url =
     { Subscription.feed_url }
     |> Subscription.create_to_string
   in
-  Client.call ~data ~ok_statuses:[ `Created ; `Found ; `Not_found ] `POST client
-    ~path
+  Client.call ~data
+    ~ok_statuses:[ `Created ; `Found ; `Not_found ; `Multiple_choices ]
+    `POST client ~path
   >|= Result.bind ~f:(fun (status, body) ->
       match status with
       | `Not_found -> Ok None
